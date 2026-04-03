@@ -21,9 +21,9 @@
             --green:#2ecc71;
             --red:#e74c3c;
             --panel:#E8EAFF;
-            --air-color:#0099FF;
+            --air-color:#91D1FA;
             --land-color:#FA9E28;
-            --sea-color:#7DDE7D;
+            --sea-color:#0D23DE;
         }
         body{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -90,7 +90,7 @@
         }
         .img-card-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .img-label-overlay {
-            position: absolute; bottom: 0; left: 0; right: 0;
+            position: absolute; top: 0; left: 0; right: 0;
             background: rgba(0,0,0,0.55); color: #fff; text-align: center;
             padding: 0.5rem 0.75rem; font-size: clamp(0.95rem, 2.5vw, 1.25rem); font-weight: 700;
             pointer-events: none;
@@ -426,7 +426,7 @@
         if (britishVoice) {
             utterance.voice = britishVoice;
         }
-        utterance.rate = 0.95;
+        utterance.rate = 0.75;
         speechSynthesis.speak(utterance);
     }
 
@@ -608,9 +608,9 @@
 
     // --- Configuración de botones del Juego 1 ---
     const buttonConfigs = [
-        { type: 'air', label: 'Air', emoji: '☁️', cssClass: 'btn-air', color: '#0099FF' },
+        { type: 'air', label: 'Air', emoji: '☁️', cssClass: 'btn-air', color: '#91D1FA' },
         { type: 'land', label: 'Land', emoji: '⛰️', cssClass: 'btn-land', color: '#FA9E28' },
-        { type: 'sea', label: 'Sea', emoji: '🌊', cssClass: 'btn-sea', color: '#7DDE7D' }
+        { type: 'sea', label: 'Sea', emoji: '🌊', cssClass: 'btn-sea', color: '#0D23DE' }
     ];
 
     // --- Lógica del Juego 1 (Types of transport) ---
@@ -764,7 +764,11 @@
 
             if (found === totalTargets) {
                 setTimeout(() => {
-                    reproducirSonidoCompletado();
+                    // Calcular si este es el último juego de grid antes de reproducir sonido
+                    const isLastGrid = (window._nextGameIdx >= window._gameOrder.length - 1);
+                    if (!isLastGrid) {
+                        reproducirSonidoCompletado();
+                    }
                     window._nextGameIdx++;
                     loadNextGridGame();
                 }, 400);
@@ -836,7 +840,7 @@
                 c.className = 'confetti';
                 c.style.left = Math.random() * 100 + 'vw';
                 c.style.top = '-10px';
-                c.style.backgroundColor = ['#f59e42', '#2ecc71', '#254fba', '#0099FF', '#7DDE7D'][Math.floor(Math.random()*5)];
+                c.style.backgroundColor = ['#f59e42', '#2ecc71', '#254fba', '#91D1FA', '#0D23DE'][Math.floor(Math.random()*5)];
                 c.style.setProperty('--tx', (Math.random()-0.5) * 400 + 'px');
                 c.style.setProperty('--ty', window.innerHeight + 'px');
                 document.body.appendChild(c);
