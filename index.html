@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="google" content="notranslate">
+    <title>Las señales de tráfico</title>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
+    <style>
+        /* ====== Reset & base ====== */
+        * { box-sizing: border-box; margin:0; padding:0; }
+        :root{
+            --blue-dark:#04032B;
+            --blue-700:#1a3a5f;
+            --blue-600:#254fba;
+            --orange:#f59e42;
+            --orange-700:#e67e22;
+            --bg-grad-1:#1a3a5f;
+            --bg-grad-2:#0d2340;
+            --white:#ffffff;
+            --green:#2ecc71;
+            --red:#e74c3c;
+            --panel:#E8EAFF;
+        }
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            min-height:100vh; 
+            display:flex; 
+            justify-content:center; 
+            align-items: flex-start; 
+            color:#333; 
+            padding: 40px 10px 20px 10px; 
+        }
+        .game-container{
+            background:var(--white); border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.12);
+            padding:1.5rem; max-width:980px; width:100%; min-height:640px; position:relative; overflow:hidden;
+            display:flex; flex-direction:column;
+        }
+        header{ text-align:center; margin-bottom:.8rem; margin-top:0.5rem; }
+        h1{ color:var(--blue-dark); font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; letter-spacing:.5px; margin-bottom: 0.5rem; }
+        .subtitle{ color:var(--blue-700); font-size:clamp(1rem,3vw,1.3rem); margin-top:.25rem; font-weight: 600; line-height: 1.4; }
+        .highlight-keyword{ color:var(--orange); font-weight:800; }
+        .text-green { color: var(--green); font-weight: 800; }
+        .text-red { color: var(--red); font-weight: 800; }
+
+        /* Buttons Base */
+        .btn{ color:#fff; border:none; border-radius:12px; cursor:pointer; font-weight:800;
+            transition:transform .1s ease, box-shadow .2s ease, background-color .25s ease;
+            display:inline-flex; align-items:center; justify-content:center; font-size: 1.1rem; gap: 10px; }
+        .btn:hover{ transform:translateY(-3px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+        .btn:active{ transform:translateY(0); }
+        
+        .btn-start { background: var(--orange); margin: 1rem auto; padding: 0.75rem 2rem; height: 55px; font-size: 1.3rem; min-width: 200px; }
+
+        /* Pantallas */
+        .screen{ display:none; animation:fadeIn .4s ease; flex-direction: column; flex:1; width: 100%; }
+        .screen.active{ display:flex; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
+        /* Info & Progress */
+        .game-info{ display:flex; gap:1rem; align-items:center; justify-content:space-between; margin:1rem 0; width: 100%; }
+        .timer{ font-weight:900; color:var(--blue-700); font-size:1.2rem; min-width: 100px; text-align: right; }
+        .progress-bar{ flex:1; height:14px; background:#e6f2ff; border-radius:999px; overflow:hidden; border: 1px solid #d3e2ff; }
+        .progress-fill{ height:100%; width:0%; background: var(--orange); transition:width .4s ease; }
+        .level-indicator{ font-weight:900; color:var(--blue-700); font-size:1.1rem; min-width: 90px; text-align: left; }
+
+        /* Pantalla Inicio */
+        .start-content{ display:flex; flex-direction:column; align-items:center; flex:1; padding:1rem; text-align: center; }
+        .advice-box{ background:var(--panel); border-left:5px solid var(--blue-700); padding:1.5rem; border-radius:12px;
+            color:var(--blue-700); max-width:800px; font-size:1.2rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .advice-anim-text { display: block; text-align: center; font-weight: 900; margin-top: 1rem; font-size: 1.5rem; }
+        .start-image-container { width: 100%; display: flex; justify-content: center; margin-top: auto; }
+        .start-image{ max-width: 450px; width: 100%; height: auto; }
+
+        .mute-btn{ position:absolute; top:1rem; right:1rem; background:var(--orange); color:#fff; border:2px solid #fff; width:42px; height:42px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; z-index:100; transition: transform 0.1s ease, box-shadow 0.2s ease; }
+        .mute-btn:hover{ transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+        /* Juego 1: Layout */
+        .j1-display { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0.5rem; flex:1; justify-content: center; width: 100%; }
+        .j1-text-box { text-align: center; font-size: clamp(1.2rem, 3.5vw, 1.8rem); color: var(--blue-dark); font-weight: 800; min-height: 60px; display: flex; align-items: center; justify-content: center; padding: 0.5rem; background: var(--panel); border-radius: 12px; width: 100%; max-width: 800px; line-height: 1.3; }
+        
+        .j1-audio-btn-container { display: flex; justify-content: center; }
+        .play-audio-btn { width: 50px; height: 50px; background: var(--blue-600); border: 4px solid #fff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s ease, box-shadow 0.2s ease; }
+        .play-audio-btn:hover { transform: scale(1.1); box-shadow: 0 6px 14px rgba(0,0,0,0.25); }
+        .play-audio-btn:active { transform: scale(0.95); }
+
+        .j1-options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .j1-option-cell {
+            aspect-ratio: 4 / 3;
+            border: 4px solid transparent;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            background: transparent;
+            padding: 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            transition: border-color 0.2s ease, transform 0.1s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .j1-option-cell:hover { transform: scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .j1-option-cell img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; background: transparent; }
+        .j1-option-cell.cell-correct { border-color: var(--green) !important; border-width: 6px; background-color: rgba(46, 204, 113, 0.35); }
+        .j1-option-cell.cell-wrong { border-color: var(--red) !important; background-color: rgba(231, 76, 60, 0.3); }
+
+        /* Pantalla de Juego 2 (Grid) */
+        .grid-display { 
+            display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0.5rem; flex:1; width: 100%; 
+        }
+        .j2-text-box { text-align: center; font-size: clamp(1.1rem, 3vw, 1.6rem); color: var(--blue-dark); font-weight: 800; min-height: 40px; display: flex; align-items: center; justify-content: center; padding: 0.5rem; background: var(--panel); border-radius: 12px; width: 100%; max-width: 800px; line-height: 1.3; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .grid-cell {
+            aspect-ratio: 4 / 3;
+            border: 4px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            background: transparent;
+            padding: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: border-color 0.2s ease, transform 0.1s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .grid-cell:hover { transform: scale(1.03); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .grid-cell img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; background: transparent; }
+        .grid-cell.cell-correct { border-color: var(--green) !important; border-width: 6px; background-color: rgba(46, 204, 113, 0.35); }
+        .grid-cell.cell-wrong { border-color: var(--red) !important; background-color: rgba(231, 76, 60, 0.3); }
+
+        /* Pantalla Final */
+        .results{ display:flex; flex-direction:column; align-items:center; gap:0.8rem; text-align:center; flex:1; justify-content:center; padding: 1rem; }
+        .big-score{ font-size:clamp(3rem,8vw,4.5rem); color:var(--blue-600); font-weight:900; margin: 0.5rem 0; }
+        #trophyBox { display: none; font-size: 5.5rem; animation: bounce 1s ease infinite; margin-bottom: 0.5rem; }
+        @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-20px); } }
+        .final-time { font-size: 1.3rem; color: var(--blue-700); font-weight: 600; margin-bottom: 0.5rem; }
+        .school-logo { width: 180px; margin-top: 1rem; }
+        .credit { font-weight: 700; color: #555; }
+
+        /* Animaciones Globales */
+        .shake { animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shakeAnim {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        .confetti{ position:fixed; width:12px; height:12px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:1000; pointer-events: none; }
+        @keyframes confetti-fall{ 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
+
+        @media (max-width: 750px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 550px) {
+            .j1-options-grid { gap: 10px; }
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(4, auto);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container notranslate" id="mainWrapper">
+    <button class="mute-btn" id="muteBtn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+    </button>
+
+    <section class="screen active" id="startScreen">
+        <header>
+            <h1>Las señales de tráfico</h1>
+            <div class="subtitle">Seguridad vial: identifica las señales básicas de circulación</div>
+        </header>
+        <div class="start-content">
+            <div class="advice-box">
+                Conductores y peatones compartimos las calles de nuestra localidad, por eso es necesario conocer las señales básicas de <span class="highlight-keyword">información</span>, <span class="highlight-keyword">obligación</span>, <span class="highlight-keyword">prohibición</span> y <span class="highlight-keyword">peligro</span>.
+                <div class="advice-anim-text"><b>¡Ánimo!</b></div>
+            </div>
+            <div class="start-image-container">
+                <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños">
+            </div>
+            <button class="btn btn-start" id="startBtn">Comenzar</button>
+        </div>
+    </section>
+
+    <section class="screen" id="gameScreen1">
+        <header>
+            <h1>¿Qué indica esta señal?</h1>
+            <div class="subtitle">Señala la señal correcta</div>
+        </header>
+        <div class="game-info">
+            <div class="level-indicator" id="levelIndicator1">Nivel 1/10</div>
+            <div class="progress-bar"><div class="progress-fill" id="progGame1"></div></div>
+            <div class="timer" id="timerDisplay1">00:00.0</div>
+        </div>
+        <div class="j1-display" id="gameBoard1">
+            <div class="j1-text-box" id="textDisplay1"></div>
+            <div class="j1-audio-btn-container">
+                <button class="play-audio-btn" id="playAudioBtn1">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="none">
+                        <polygon points="6,3 20,12 6,21"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="j1-options-grid" id="optionsGrid1"></div>
+        </div>
+    </section>
+
+    <section class="screen" id="gameScreen2">
+        <header>
+            <h1>¿A qué señal de tráfico nos referimos?</h1>
+        </header>
+        <div class="game-info">
+            <div class="level-indicator" id="levelIndicator2">Nivel 1/10</div>
+            <div class="progress-bar"><div class="progress-fill" id="progGame2"></div></div>
+            <div class="timer" id="timerDisplay2">00:00.0</div>
+        </div>
+        <div class="grid-display">
+            <div class="j2-text-box" id="textDisplay2"></div>
+            <div class="j1-audio-btn-container">
+                <button class="play-audio-btn" id="playAudioBtn2">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="none">
+                        <polygon points="6,3 20,12 6,21"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid-container" id="gridContainer2"></div>
+        </div>
+    </section>
+
+    <section class="screen" id="finalScreen">
+        <header><h1 style="color: var(--blue-dark);">Las señales de tráfico</h1></header>
+        <div class="results">
+            <div id="trophyBox">🏆</div>
+            <div style="font-size: 1.5rem; font-weight: 700;">Score:</div>
+            <div class="big-score" id="finalScore">0</div>
+            <div class="final-time">Tiempo: <span id="totalTime">00:00.0</span></div>
+            <div id="finalMsg" class="subtitle" style="margin-bottom: 1.5rem;"></div>
+            <button class="btn btn-start" id="restartBtn">Volver al menú</button>
+            <div class="credit">Creado por Manuel J. Ventura</div>
+            <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="Logo del colegio">
+        </div>
+    </section>
+</div>
+
+<script>
+    // --- Configuración de Audio (URLs) ---
+    const audioFiles = {
+        completado: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Completado.mp3',
+        correcto: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Correcto.mp3',
+        victoria: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Termin%C3%A9.mp3',
+        error: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Error.mp3',
+        tap: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Tap.mp3'
+    };
+
+    // --- Datos del Juego ---
+    const SIGNALS_DATA = [
+        { 
+            text: 'Entrada prohibida a vehículos.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Entrada_prohibida_vehiculos.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Entrada_prohibida.png' 
+        },
+        { 
+            text: 'Paso de peatones.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Paso_peatones.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Paso_cebras.png' 
+        },
+        { 
+            text: 'Entrada prohibida a peatones.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Prohibida_peatones.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Prohibido_paso.png' 
+        },
+        { 
+            text: 'Semáforo en rojo para vehículos: no pueden continuar.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Rojo_vehiculos.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Rojo_coches.png' 
+        },
+        { 
+            text: 'Peligro: lugar frecuentado por niños.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Peligro_ni%C3%B1os.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Salida%20colegio.png' 
+        },
+        { 
+            text: 'Semáforo en verde para peatones.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Verde_peatones.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Semaforo_cruzar.png' 
+        },
+        { 
+            text: 'Semáforo en rojo para peatones.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Rojo_peatones.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Semaforo_parar.png' 
+        },
+        { 
+            text: 'Stop: los vehículos deben detenerse antes de cruzar.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Stop.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Stop.png' 
+        },
+        { 
+            text: 'Semáforo en verde vehículos: pueden continuar.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Verde_vehiculos.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Verde_coches.png' 
+        },
+        { 
+            text: 'Carril bici.', 
+            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Carril%20bici.mp3', 
+            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/bici.png' 
+        }
+    ];
+
+    // --- Variables de Estado ---
+    let isMuted = false, startTime = 0, timerInterval = null, totalElapsed = 0;
+    let totalAttempts = 0;
+    const intentosMinimos = 20;
+    let audioContext;
+    let isProcessing = false;
+    let currentAudio = null;
+    
+    // Game 1 State
+    let activeGame1Data = [];
+    let currentQuestionIdx = 0;
+    let fakeSignalUsageCount = {};
+
+    // Grid Games State
+    let grid2CorrectCount = 0;
+    let activeGridData = [];
+    let grid2Order = [];
+
+    // Precarga de audios
+    const audioObjects = {};
+    Object.keys(audioFiles).forEach(key => {
+        audioObjects[key] = new Audio(audioFiles[key]);
+        audioObjects[key].load();
+    });
+
+    // --- FIX CHROMEOS: Desbloqueo de Audio ---
+    function unlockAudioContext() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        const buffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+    }
+
+    // --- Funciones de Sonido ---
+    function reproducirSonidoCorrecto() {
+        if(isMuted) return;
+        const a = audioObjects['correcto'];
+        if (!a) return;
+        a.currentTime = 0;
+        a.play().catch(e => console.log("Audio play error:", e));
+    }
+
+    function reproducirSonidoError() {
+        if(isMuted) return;
+        const a = audioObjects['error'];
+        if (!a) return;
+        a.currentTime = 0;
+        a.play().catch(e => console.log("Audio play error:", e));
+    }
+
+    function reproducirSonidoVictoria() {
+        if(isMuted) return;
+        const a = audioObjects['victoria'];
+        if (!a) return;
+        a.currentTime = 0;
+        a.play().catch(e => console.log("Audio play error:", e));
+    }
+
+    function reproducirSonidoCompletado() {
+        if(isMuted) return;
+        const a = audioObjects['completado'];
+        if (!a) return;
+        a.currentTime = 0;
+        a.play().catch(e => console.log("Audio play error:", e));
+    }
+
+    function reproducirSonidoTap() {
+        if(isMuted) return;
+        const a = audioObjects['tap'];
+        if (!a) return;
+        a.currentTime = 0;
+        a.play().catch(e => console.log("Audio play error:", e));
+    }
+
+    function reproducirAudioSenal(url) {
+        if(isMuted) return;
+        detenerAudioSenal();
+        currentAudio = new Audio(url);
+        currentAudio.play().catch(e => console.log("Audio señal error:", e));
+    }
+
+    function detenerAudioSenal() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
+        }
+    }
+
+    // --- Funciones de Utilidad ---
+    function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+    
+    function formatTime(ms) {
+        const d = ms / 1000;
+        const m = Math.floor(d / 60).toString().padStart(2, '0');
+        const s = Math.floor(d % 60).toString().padStart(2, '0');
+        const dec = Math.round((d % 1) * 10);
+        return `${m}:${s}.${dec}`;
+    }
+
+    function applyShake(id) {
+        const el = document.getElementById(id);
+        el.classList.remove('shake');
+        void el.offsetWidth; 
+        el.classList.add('shake');
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function updateProgress(progressId, percent) {
+        document.getElementById(progressId).style.width = percent + '%';
+    }
+
+    // --- Lógica del Juego ---
+
+    function startGame() {
+        unlockAudioContext();
+        reproducirSonidoTap();
+        
+        totalAttempts = 0;
+        totalElapsed = 0;
+        isProcessing = false;
+        grid2CorrectCount = 0;
+        fakeSignalUsageCount = {};
+
+        preloadImagesAndAudios();
+
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            totalElapsed = Date.now() - startTime;
+            const timeStr = formatTime(totalElapsed);
+            const td1 = document.getElementById('timerDisplay1');
+            const td2 = document.getElementById('timerDisplay2');
+            if(td1) td1.textContent = timeStr;
+            if(td2) td2.textContent = timeStr;
+        }, 100);
+
+        startGame1();
+    }
+
+    function preloadImagesAndAudios() {
+        SIGNALS_DATA.forEach(item => {
+            const img = new Image();
+            img.src = item.image;
+            const aud = new Audio(item.audio);
+            aud.load();
+        });
+    }
+
+    // ================= GAME 1 =================
+    function startGame1() {
+        currentQuestionIdx = 0;
+        activeGame1Data = shuffle([...SIGNALS_DATA]);
+        fakeSignalUsageCount = {};
+        updateProgress('progGame1', '0%');
+        showScreen('gameScreen1');
+        loadGame1Question();
+    }
+
+    function getWeightedRandomFake(correctIndex) {
+        let others = SIGNALS_DATA.map((item, idx) => idx).filter(idx => idx !== correctIndex);
+        
+        let minUsage = Infinity;
+        for(let idx of others) {
+            let usage = fakeSignalUsageCount[idx] || 0;
+            if(usage < minUsage) {
+                minUsage = usage;
+            }
+        }
+        
+        let candidates = others.filter(idx => (fakeSignalUsageCount[idx] || 0) === minUsage);
+        return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    function loadGame1Question() {
+        if (currentQuestionIdx >= activeGame1Data.length) {
+            startGame2();
+            return;
+        }
+        isProcessing = false;
+        const q = activeGame1Data[currentQuestionIdx];
+        const correctIndex = SIGNALS_DATA.indexOf(q);
+        
+        document.getElementById('textDisplay1').textContent = q.text;
+        document.getElementById('levelIndicator1').textContent = `Nivel ${currentQuestionIdx + 1}/10`;
+        updateProgress('progGame1', ((currentQuestionIdx) / activeGame1Data.length) * 100 + '%');
+        
+        reproducirAudioSenal(q.audio);
+
+        const fakeIndex = getWeightedRandomFake(correctIndex);
+        fakeSignalUsageCount[fakeIndex] = (fakeSignalUsageCount[fakeIndex] || 0) + 1;
+
+        const options = [
+            { data: q, isCorrect: true },
+            { data: SIGNALS_DATA[fakeIndex], isCorrect: false }
+        ];
+
+        const shuffledOptions = shuffle([...options]);
+
+        const grid = document.getElementById('optionsGrid1');
+        grid.innerHTML = '';
+
+        shuffledOptions.forEach(opt => {
+            const cell = document.createElement('div');
+            cell.className = 'j1-option-cell';
+            
+            const img = document.createElement('img');
+            img.src = opt.data.image;
+            img.alt = opt.data.text;
+            cell.appendChild(img);
+
+            cell.onclick = () => checkGame1Answer(cell, opt.isCorrect);
+            grid.appendChild(cell);
+        });
+    }
+
+    function checkGame1Answer(cellElement, isCorrect) {
+        if (isProcessing) return;
+        
+        totalAttempts++;
+
+        if (isCorrect) {
+            isProcessing = true;
+            reproducirSonidoCorrecto();
+            cellElement.classList.add('cell-correct');
+            currentQuestionIdx++;
+            setTimeout(() => loadGame1Question(), 500);
+        } else {
+            reproducirSonidoError();
+            cellElement.classList.add('cell-wrong');
+            cellElement.classList.add('shake');
+            setTimeout(() => {
+                cellElement.classList.remove('cell-wrong');
+                cellElement.classList.remove('shake');
+            }, 400);
+        }
+    }
+
+    // ================= GAME 2 =================
+    function startGame2() {
+        grid2CorrectCount = 0;
+        activeGridData = shuffle([...SIGNALS_DATA]);
+        grid2Order = [...Array(activeGridData.length).keys()];
+        grid2Order = shuffle(grid2Order);
+        updateProgress('progGame2', '0%');
+        showScreen('gameScreen2');
+        loadGame2Question();
+    }
+
+    function loadGame2Question() {
+        if (grid2CorrectCount >= activeGridData.length) {
+            endGame();
+            return;
+        }
+        isProcessing = false;
+        const currentOrderIndex = grid2Order[grid2CorrectCount];
+        const q = activeGridData[currentOrderIndex];
+        document.getElementById('textDisplay2').textContent = q.text;
+        document.getElementById('levelIndicator2').textContent = `Nivel ${grid2CorrectCount + 1}/10`;
+        updateProgress('progGame2', ((grid2CorrectCount) / activeGridData.length) * 100 + '%');
+        
+        reproducirAudioSenal(q.audio);
+
+        const container = document.getElementById('gridContainer2');
+        container.innerHTML = '';
+
+        activeGridData.forEach((item, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.index = index;
+
+            const img = document.createElement('img');
+            img.src = item.image;
+            img.alt = item.text;
+            cell.appendChild(img);
+
+            cell.onclick = () => handleGrid2Click(cell, item, currentOrderIndex);
+            container.appendChild(cell);
+        });
+    }
+
+    function handleGrid2Click(cell, item, currentOrderIndex) {
+        if (isProcessing) return;
+        if (cell.classList.contains('cell-correct')) return;
+
+        const expectedItem = activeGridData[currentOrderIndex];
+        const isCorrect = item.image === expectedItem.image;
+
+        totalAttempts++;
+
+        if (isCorrect) {
+            isProcessing = true;
+            reproducirSonidoCorrecto();
+            cell.classList.add('cell-correct');
+            grid2CorrectCount++;
+            setTimeout(() => loadGame2Question(), 500);
+        } else {
+            reproducirSonidoError();
+            cell.classList.add('cell-wrong');
+            cell.classList.add('shake');
+            setTimeout(() => {
+                cell.classList.remove('cell-wrong');
+                cell.classList.remove('shake');
+            }, 400);
+        }
+    }
+
+    // ================= FINAL =================
+    function endGame() {
+        clearInterval(timerInterval);
+        detenerAudioSenal();
+        showScreen('finalScreen');
+        
+        const finalScore = Math.max(0, Math.round(100 - ((totalAttempts - intentosMinimos) * (100 / intentosMinimos))));
+        
+        document.getElementById('finalScore').textContent = finalScore;
+        document.getElementById('totalTime').textContent = formatTime(totalElapsed);
+
+        if(finalScore === 100) {
+            document.getElementById('trophyBox').style.display = 'block';
+            document.getElementById('finalMsg').textContent = '¡Genial, puntuación perfecta!';
+            reproducirSonidoVictoria();
+            createConfetti();
+        } else {
+            document.getElementById('trophyBox').style.display = 'none';
+            document.getElementById('finalMsg').textContent = '¡Buen trabajo, sigue practicando!';
+            reproducirSonidoCompletado();
+        }
+    }
+
+    function createConfetti() {
+        for(let i=0; i<100; i++){
+            setTimeout(() => {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-10px';
+                c.style.backgroundColor = ['#f59e42', '#2ecc71', '#254fba'][Math.floor(Math.random()*3)];
+                c.style.setProperty('--tx', (Math.random()-0.5) * 400 + 'px');
+                c.style.setProperty('--ty', window.innerHeight + 'px');
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }, i * 30);
+        }
+    }
+
+    // --- Eventos ---
+    document.getElementById('startBtn').onclick = startGame;
+    
+    document.getElementById('playAudioBtn1').onclick = () => {
+        if (!isProcessing && activeGame1Data.length > 0) {
+            reproducirAudioSenal(activeGame1Data[currentQuestionIdx].audio);
+        }
+    };
+
+    document.getElementById('playAudioBtn2').onclick = () => {
+        if (!isProcessing && activeGridData.length > 0) {
+            const currentOrderIndex = grid2Order[grid2CorrectCount];
+            reproducirAudioSenal(activeGridData[currentOrderIndex].audio);
+        }
+    };
+    
+    document.getElementById('restartBtn').onclick = () => {
+        reproducirSonidoTap();
+        location.reload(); 
+    };
+    
+    document.getElementById('muteBtn').onclick = () => { 
+        if (!isMuted) {
+            isMuted = true;
+            detenerAudioSenal();
+            document.getElementById('muteBtn').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>';
+        } else {
+            isMuted = false;
+            document.getElementById('muteBtn').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>';
+            reproducirSonidoTap();
+        }
+    };
+</script>
+</body>
+</html>
