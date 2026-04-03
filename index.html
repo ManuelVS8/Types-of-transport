@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" translate="no">
+<html lang="en" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta name="google" content="notranslate">
-    <title>Las señales de tráfico</title>
+    <meta name="google" content="notranlate">
+    <title>Forms of transport</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
     <style>
         /* ====== Reset & base ====== */
@@ -21,6 +21,9 @@
             --green:#2ecc71;
             --red:#e74c3c;
             --panel:#E8EAFF;
+            --air-color:#0099FF;
+            --land-color:#FA9E28;
+            --sea-color:#7DDE7D;
         }
         body{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -37,116 +40,121 @@
             padding:1.5rem; max-width:980px; width:100%; min-height:640px; position:relative; overflow:hidden;
             display:flex; flex-direction:column;
         }
-        header{ text-align:center; margin-bottom:.8rem; margin-top:0.5rem; }
-        h1{ color:var(--blue-dark); font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; letter-spacing:.5px; margin-bottom: 0.5rem; }
-        .subtitle{ color:var(--blue-700); font-size:clamp(1rem,3vw,1.3rem); margin-top:.25rem; font-weight: 600; line-height: 1.4; }
-        .highlight-keyword{ color:var(--orange); font-weight:800; }
+        header { text-align:center; margin-bottom:.8rem; margin-top:0.5rem; }
+        h1 { color:var(--blue-dark); font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; letter-spacing:.5px; margin-bottom: 0.5rem; }
+        .subtitle { color:var(--blue-700); font-size:clamp(1rem,3vw,1.3rem); margin-top:.25rem; font-weight: 600; line-height: 1.4; }
+        .highlight-keyword { color:var(--orange); font-weight:800; }
         .text-green { color: var(--green); font-weight: 800; }
         .text-red { color: var(--red); font-weight: 800; }
+        .text-air { color: var(--air-color); font-weight: 800; }
+        .text-land { color: var(--land-color); font-weight: 800; }
+        .text-sea { color: var(--sea-color); font-weight: 800; }
 
         /* Buttons Base */
-        .btn{ color:#fff; border:none; border-radius:12px; cursor:pointer; font-weight:800;
+        .btn { color:#fff; border:none; border-radius:12px; cursor:pointer; font-weight:800;
             transition:transform .1s ease, box-shadow .2s ease, background-color .25s ease;
             display:inline-flex; align-items:center; justify-content:center; font-size: 1.1rem; gap: 10px; }
-        .btn:hover{ transform:translateY(-3px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
-        .btn:active{ transform:translateY(0); }
+        .btn:hover { transform:translateY(-3px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+        .btn:active { transform:translateY(0); }
         
         .btn-start { background: var(--orange); margin: 1rem auto; padding: 0.75rem 2rem; height: 55px; font-size: 1.3rem; min-width: 200px; }
 
         /* Pantallas */
-        .screen{ display:none; animation:fadeIn .4s ease; flex-direction: column; flex:1; width: 100%; }
-        .screen.active{ display:flex; }
-        @keyframes fadeIn{ from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+        .screen { display:none; animation:fadeIn .4s ease; flex-direction: column; flex:1; width: 100%; }
+        .screen.active { display:flex; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
 
         /* Info & Progress */
-        .game-info{ display:flex; gap:1rem; align-items:center; justify-content:space-between; margin:1rem 0; width: 100%; }
-        .timer{ font-weight:900; color:var(--blue-700); font-size:1.2rem; min-width: 100px; text-align: right; }
-        .progress-bar{ flex:1; height:14px; background:#e6f2ff; border-radius:999px; overflow:hidden; border: 1px solid #d3e2ff; }
-        .progress-fill{ height:100%; width:0%; background: var(--orange); transition:width .4s ease; }
-        .level-indicator{ font-weight:900; color:var(--blue-700); font-size:1.1rem; min-width: 90px; text-align: left; }
+        .game-info { display:flex; gap:1rem; align-items:center; justify-content:space-between; margin:1rem 0; width: 100%; }
+        .timer { font-weight:900; color:var(--blue-700); font-size:1.2rem; min-width: 100px; text-align: right; }
+        .progress-bar { flex:1; height:14px; background:#e6f2ff; border-radius:999px; overflow:hidden; border: 1px solid #d3e2ff; }
+        .progress-fill { height:100%; width:0%; background: var(--orange); transition:width .4s ease; }
+        .level-indicator { font-weight:900; color:var(--orange); font-size:1.2rem; min-width: 100px; text-align: left; }
 
         /* Pantalla Inicio */
-        .start-content{ display:flex; flex-direction:column; align-items:center; flex:1; padding:1rem; text-align: center; }
-        .advice-box{ background:var(--panel); border-left:5px solid var(--blue-700); padding:1.5rem; border-radius:12px;
+        .start-content { display:flex; flex-direction:column; align-items:center; flex:1; padding:1rem; text-align: center; }
+        .advice-box { background:var(--panel); border-left:5px solid var(--blue-700); padding:1.5rem; border-radius:12px;
             color:var(--blue-700); max-width:800px; font-size:1.2rem; line-height: 1.6; margin-bottom: 1.5rem; }
         .advice-anim-text { display: block; text-align: center; font-weight: 900; margin-top: 1rem; font-size: 1.5rem; }
         .start-image-container { width: 100%; display: flex; justify-content: center; margin-top: auto; }
-        .start-image{ max-width: 450px; width: 100%; height: auto; }
+        .start-image { max-width: 450px; width: 100%; height: auto; }
 
-        .mute-btn{ position:absolute; top:1rem; right:1rem; background:var(--orange); color:#fff; border:2px solid #fff; width:42px; height:42px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; z-index:100; transition: transform 0.1s ease, box-shadow 0.2s ease; }
-        .mute-btn:hover{ transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .mute-btn { position:absolute; top:1rem; right:1rem; background:var(--orange); color:#fff; border:2px solid #fff; width:42px; height:42px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; z-index:100; }
 
-        /* Juego 1: Layout */
-        .j1-display { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0.5rem; flex:1; justify-content: center; width: 100%; }
-        .j1-text-box { text-align: center; font-size: clamp(1.2rem, 3.5vw, 1.8rem); color: var(--blue-dark); font-weight: 800; min-height: 60px; display: flex; align-items: center; justify-content: center; padding: 0.5rem; background: var(--panel); border-radius: 12px; width: 100%; max-width: 800px; line-height: 1.3; }
+        /* Juego 1: Layout estable */
+        .j1-display { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 1rem; flex:1; justify-content: center; width: 100%; }
+        .img-card-container { 
+            width: 100%; max-width: 600px; aspect-ratio: 4 / 3; background: #fff; border-radius: 20px; 
+            overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.08); border: 4px solid #e6f2ff; 
+            position: relative;
+        }
+        .img-card-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .img-label-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.55); color: #fff; text-align: center;
+            padding: 0.5rem 0.75rem; font-size: clamp(0.95rem, 2.5vw, 1.25rem); font-weight: 700;
+            pointer-events: none;
+        }
+
+        /* Botón Play Personalizado */
+        .btn-play-audio {
+            width: 60px; height: 60px; border-radius: 50%; background-color: var(--blue-600); border: none;
+            cursor: pointer; display: flex; align-items:center; justify-content:center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease, background-color 0.2s ease; padding-left: 5px;
+        }
+        .btn-play-audio:hover { transform: scale(1.1); background-color: var(--blue-700); }
+        .btn-play-audio:active { transform: scale(0.95); }
+        .play-icon { width: 0; height: 0; border-left: 18px solid white; border-top: 11px solid transparent; border-bottom: 11px solid transparent; }
         
-        .j1-audio-btn-container { display: flex; justify-content: center; }
-        .play-audio-btn { width: 50px; height: 50px; background: var(--blue-600); border: 4px solid #fff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s ease, box-shadow 0.2s ease; }
-        .play-audio-btn:hover { transform: scale(1.1); box-shadow: 0 6px 14px rgba(0,0,0,0.25); }
-        .play-audio-btn:active { transform: scale(0.95); }
+        .j1-controls { display: flex; gap: 1rem; flex-wrap: nowrap; justify-content: center; width: 100%; }
+        .btn-j1 { width: 160px; height: 120px; flex-direction: column; padding: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 1.2rem; line-height: 1.2; justify-content: center; }
+        .btn-j1 .btn-emoji { font-size: 2.5rem; line-height: 1; }
+        .btn-air { background-color: var(--air-color) !important; }
+        .btn-land { background-color: var(--land-color) !important; }
+        .btn-sea { background-color: var(--sea-color) !important; }
 
-        .j1-options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            width: 100%;
-            max-width: 800px;
-        }
+        /* Juegos 2-4: Grid Layout */
+        .j2-display { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 1rem; flex:1; width: 100%; }
+        .j2-task { font-size: 1.4rem; font-weight: 700; color: var(--blue-dark); text-align: center; min-height: 2rem; display: flex; align-items:center; justify-content:center; flex-wrap: wrap; gap: 8px; }
+        .grid-emoji { font-size: 3.5rem; line-height: 1; }
         
-        .j1-option-cell {
-            aspect-ratio: 4 / 3;
-            border: 4px solid transparent;
-            border-radius: 16px;
-            overflow: hidden;
-            cursor: pointer;
-            background: transparent;
-            padding: 0;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            transition: border-color 0.2s ease, transform 0.1s ease, background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .image-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; max-width: 800px; }
+        .grid-cell { aspect-ratio: 4 / 3; border: 4px solid transparent; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease; background-color: transparent; position: relative; }
+        .grid-cell:hover { transform: scale(1.03); }
+        .grid-cell:active { transform: scale(0.97); }
+        .grid-cell img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+        
+        .grid-cell.cell-correct { 
+            border: 8px solid var(--green); 
+            background-color: rgba(46, 204, 113, 0.35); 
+            box-shadow: inset 0 0 15px rgba(46, 204, 113, 0.6); 
+            pointer-events: none; 
         }
-        .j1-option-cell:hover { transform: scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .j1-option-cell img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; background: transparent; }
-        .j1-option-cell.cell-correct { border-color: var(--green) !important; border-width: 6px; background-color: rgba(46, 204, 113, 0.35); }
-        .j1-option-cell.cell-wrong { border-color: var(--red) !important; background-color: rgba(231, 76, 60, 0.3); }
+        .grid-cell.cell-wrong { 
+            border: 8px solid var(--red); 
+            background-color: rgba(231, 76, 60, 0.35); 
+            box-shadow: inset 0 0 15px rgba(231, 76, 60, 0.6); 
+        }
 
-        /* Pantalla de Juego 2 (Grid) */
-        .grid-display { 
-            display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0.5rem; flex:1; width: 100%; 
+        /* Responsive Grid: Semi-anchas (Tablets) */
+        @media (min-width: 601px) and (max-width: 850px) {
+            .image-grid { grid-template-columns: repeat(3, 1fr); }
         }
-        .j2-text-box { text-align: center; font-size: clamp(1.1rem, 3vw, 1.6rem); color: var(--blue-dark); font-weight: 800; min-height: 40px; display: flex; align-items: center; justify-content: center; padding: 0.5rem; background: var(--panel); border-radius: 12px; width: 100%; max-width: 800px; line-height: 1.3; }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
+
+        /* Responsive Grid: Móviles */
+        @media (max-width: 600px) {
+            .image-grid { grid-template-columns: repeat(2, 1fr); }
+            .btn-j1 { width: 100px; height: 85px; font-size: 0.95rem; }
+            .btn-j1 .btn-emoji { font-size: 2rem; }
+            .btn-play-audio { width: 50px; height: 50px; }
+            .play-icon { border-left-width: 15px; border-top-width: 9px; border-bottom-width: 9px; }
+            .level-indicator { font-size: 1rem; min-width: 80px; }
+            .timer { font-size: 1rem; min-width: 80px; }
         }
-        .grid-cell {
-            aspect-ratio: 4 / 3;
-            border: 4px solid transparent;
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            background: transparent;
-            padding: 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: border-color 0.2s ease, transform 0.1s ease, background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .grid-cell:hover { transform: scale(1.03); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        .grid-cell img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; background: transparent; }
-        .grid-cell.cell-correct { border-color: var(--green) !important; border-width: 6px; background-color: rgba(46, 204, 113, 0.35); }
-        .grid-cell.cell-wrong { border-color: var(--red) !important; background-color: rgba(231, 76, 60, 0.3); }
 
         /* Pantalla Final */
-        .results{ display:flex; flex-direction:column; align-items:center; gap:0.8rem; text-align:center; flex:1; justify-content:center; padding: 1rem; }
-        .big-score{ font-size:clamp(3rem,8vw,4.5rem); color:var(--blue-600); font-weight:900; margin: 0.5rem 0; }
+        .results { display:flex; flex-direction:column; align-items:center; gap:0.8rem; text-align:center; flex:1; justify-content:center; padding: 1rem; }
+        .big-score { font-size:clamp(3rem,8vw,4.5rem); color:var(--blue-600); font-weight:900; margin: 0.5rem 0; }
         #trophyBox { display: none; font-size: 5.5rem; animation: bounce 1s ease infinite; margin-bottom: 0.5rem; }
         @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-20px); } }
         .final-time { font-size: 1.3rem; color: var(--blue-700); font-weight: 600; margin-bottom: 0.5rem; }
@@ -162,21 +170,8 @@
             40%, 60% { transform: translate3d(6px, 0, 0); }
         }
 
-        .confetti{ position:fixed; width:12px; height:12px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:1000; pointer-events: none; }
-        @keyframes confetti-fall{ 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
-
-        @media (max-width: 750px) {
-            .grid-container {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        @media (max-width: 550px) {
-            .j1-options-grid { gap: 10px; }
-            .grid-container {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(4, auto);
-            }
-        }
+        .confetti { position:fixed; width:12px; height:12px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:1000; pointer-events: none; }
+        @keyframes confetti-fall { 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
     </style>
 </head>
 <body>
@@ -192,77 +187,116 @@
 
     <section class="screen active" id="startScreen">
         <header>
-            <h1>Las señales de tráfico</h1>
-            <div class="subtitle">Seguridad vial: identifica las señales básicas de circulación</div>
+            <h1 class="notranslate">Forms of transport</h1>
+            <div class="subtitle notranslate">Identify the types of transport</div>
         </header>
         <div class="start-content">
-            <div class="advice-box">
-                Conductores y peatones compartimos las calles de nuestra localidad, por eso es necesario conocer las señales básicas de <span class="highlight-keyword">información</span>, <span class="highlight-keyword">obligación</span>, <span class="highlight-keyword">prohibición</span> y <span class="highlight-keyword">peligro</span>.
-                <div class="advice-anim-text"><b>¡Ánimo!</b></div>
+            <div class="advice-box notranslate">
+                We use different types of transport to travel by <span class="highlight-keyword">air</span>, <span class="highlight-keyword">land</span>, or <span class="highlight-keyword">sea</span>.
+                <div class="advice-anim-text">Good luck!</div>
             </div>
             <div class="start-image-container">
-                <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños">
+                <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Children">
             </div>
-            <button class="btn btn-start" id="startBtn">Comenzar</button>
+            <button class="btn btn-start notranslate" id="startBtn">Play</button>
         </div>
     </section>
 
-    <section class="screen" id="gameScreen1">
+    <section class="screen" id="game1Screen">
         <header>
-            <h1>¿Qué indica esta señal?</h1>
-            <div class="subtitle">Señala la señal correcta</div>
+            <h1 class="notranslate">Types of transport</h1>
+            <div class="subtitle notranslate">Identify the <span class="text-air">air</span>, <span class="text-land">land</span> and <span class="text-sea">sea</span> transport.</div>
         </header>
         <div class="game-info">
-            <div class="level-indicator" id="levelIndicator1">Nivel 1/10</div>
+            <div class="level-indicator notranslate" id="level1Indicator">Level 1/12</div>
             <div class="progress-bar"><div class="progress-fill" id="progGame1"></div></div>
-            <div class="timer" id="timerDisplay1">00:00.0</div>
+            <div class="timer" id="timer1Display">00:00.0</div>
         </div>
-        <div class="j1-display" id="gameBoard1">
-            <div class="j1-text-box" id="textDisplay1"></div>
-            <div class="j1-audio-btn-container">
-                <button class="play-audio-btn" id="playAudioBtn1">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="none">
-                        <polygon points="6,3 20,12 6,21"></polygon>
-                    </svg>
-                </button>
+        <div class="j1-display" id="game1Board">
+            <div class="img-card-container">
+                <img id="game1Img" src="" alt="Transport image">
+                <div class="img-label-overlay notranslate" id="game1Label"></div>
             </div>
-            <div class="j1-options-grid" id="optionsGrid1"></div>
+            <div class="j1-controls" id="game1Controls">
+                <!-- Botones generados dinámicamente -->
+            </div>
         </div>
     </section>
 
-    <section class="screen" id="gameScreen2">
+    <section class="screen" id="game2Screen">
         <header>
-            <h1>¿A qué señal de tráfico nos referimos?</h1>
+            <h1 class="notranslate">Select the <span class="text-air">AIR</span> transports</h1>
         </header>
         <div class="game-info">
-            <div class="level-indicator" id="levelIndicator2">Nivel 1/10</div>
+            <div class="level-indicator notranslate" id="level2Indicator">Level 1/4</div>
             <div class="progress-bar"><div class="progress-fill" id="progGame2"></div></div>
-            <div class="timer" id="timerDisplay2">00:00.0</div>
+            <div class="timer" id="timer2Display">00:00.0</div>
         </div>
-        <div class="grid-display">
-            <div class="j2-text-box" id="textDisplay2"></div>
-            <div class="j1-audio-btn-container">
-                <button class="play-audio-btn" id="playAudioBtn2">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="none">
-                        <polygon points="6,3 20,12 6,21"></polygon>
-                    </svg>
-                </button>
+        <div class="j2-display" id="game2Board">
+            <div class="grid-emoji notranslate">☁️</div>
+            <div class="j2-task notranslate" id="game2Task">Select the pictures of air transports.</div>
+            <button class="btn-play-audio" id="btnReplayTask2" title="Listen again">
+                <div class="play-icon"></div>
+            </button>
+            <div class="image-grid" id="imageGrid2">
+                <!-- Celdas generadas dinámicamente -->
             </div>
-            <div class="grid-container" id="gridContainer2"></div>
+        </div>
+    </section>
+
+    <section class="screen" id="game3Screen">
+        <header>
+            <h1 class="notranslate">Select the <span class="text-land">LAND</span> transports</h1>
+        </header>
+        <div class="game-info">
+            <div class="level-indicator notranslate" id="level3Indicator">Level 1/4</div>
+            <div class="progress-bar"><div class="progress-fill" id="progGame3"></div></div>
+            <div class="timer" id="timer3Display">00:00.0</div>
+        </div>
+        <div class="j2-display" id="game3Board">
+            <div class="grid-emoji notranslate">⛰️</div>
+            <div class="j2-task notranslate" id="game3Task">Select the pictures of land transports.</div>
+            <button class="btn-play-audio" id="btnReplayTask3" title="Listen again">
+                <div class="play-icon"></div>
+            </button>
+            <div class="image-grid" id="imageGrid3">
+                <!-- Celdas generadas dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" id="game4Screen">
+        <header>
+            <h1 class="notranslate">Select the <span class="text-sea">SEA</span> transports</h1>
+        </header>
+        <div class="game-info">
+            <div class="level-indicator notranslate" id="level4Indicator">Level 1/4</div>
+            <div class="progress-bar"><div class="progress-fill" id="progGame4"></div></div>
+            <div class="timer" id="timer4Display">00:00.0</div>
+        </div>
+        <div class="j2-display" id="game4Board">
+            <div class="grid-emoji notranslate">🌊</div>
+            <div class="j2-task notranslate" id="game4Task">Select the pictures of sea transports.</div>
+            <button class="btn-play-audio" id="btnReplayTask4" title="Listen again">
+                <div class="play-icon"></div>
+            </button>
+            <div class="image-grid" id="imageGrid4">
+                <!-- Celdas generadas dinámicamente -->
+            </div>
         </div>
     </section>
 
     <section class="screen" id="finalScreen">
-        <header><h1 style="color: var(--blue-dark);">Las señales de tráfico</h1></header>
+        <header><h1 style="color: var(--blue-dark);" class="notranslate">Types of transport</h1></header>
         <div class="results">
             <div id="trophyBox">🏆</div>
-            <div style="font-size: 1.5rem; font-weight: 700;">Score:</div>
+            <div style="font-size: 1.5rem; font-weight: 700;" class="notranslate">Score:</div>
             <div class="big-score" id="finalScore">0</div>
-            <div class="final-time">Tiempo: <span id="totalTime">00:00.0</span></div>
-            <div id="finalMsg" class="subtitle" style="margin-bottom: 1.5rem;"></div>
-            <button class="btn btn-start" id="restartBtn">Volver al menú</button>
-            <div class="credit">Creado por Manuel J. Ventura</div>
-            <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="Logo del colegio">
+            <div class="final-time notranslate">Total time: <span id="totalTime">00:00.0</span></div>
+            <div id="finalMsg" class="subtitle notranslate" style="margin-bottom: 1.5rem;"></div>
+            <button class="btn btn-start notranslate" id="restartBtn">Back to menu</button>
+            <div class="credit notranslate">Created by Manuel J. Ventura</div>
+            <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="School Logo">
         </div>
     </section>
 </div>
@@ -277,83 +311,56 @@
         tap: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Tap.mp3'
     };
 
-    // --- Datos del Juego ---
-    const SIGNALS_DATA = [
-        { 
-            text: 'Entrada prohibida a vehículos.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Entrada_prohibida_vehiculos.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Entrada_prohibida.png' 
-        },
-        { 
-            text: 'Paso de peatones.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Paso_peatones.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Paso_cebras.png' 
-        },
-        { 
-            text: 'Entrada prohibida a peatones.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Prohibida_peatones.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Prohibido_paso.png' 
-        },
-        { 
-            text: 'Semáforo en rojo para vehículos: no pueden continuar.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Rojo_vehiculos.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Rojo_coches.png' 
-        },
-        { 
-            text: 'Peligro: lugar frecuentado por niños.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Peligro_ni%C3%B1os.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Salida%20colegio.png' 
-        },
-        { 
-            text: 'Semáforo en verde para peatones.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Verde_peatones.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Semaforo_cruzar.png' 
-        },
-        { 
-            text: 'Semáforo en rojo para peatones.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Rojo_peatones.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Semaforo_parar.png' 
-        },
-        { 
-            text: 'Stop: los vehículos deben detenerse antes de cruzar.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Stop.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Stop.png' 
-        },
-        { 
-            text: 'Semáforo en verde vehículos: pueden continuar.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Verde_vehiculos.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Verde_coches.png' 
-        },
-        { 
-            text: 'Carril bici.', 
-            audio: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/Audio_se%C3%B1ales/Carril%20bici.mp3', 
-            image: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Se%C3%B1ales/bici.png' 
-        }
+    // --- Datos de Imágenes con textos de display y habla separados ---
+    const IMAGES_AIR = [
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Globo.png', displayText: 'Hot-air balloon (Globo)', speakText: 'Hot-air balloon', type: 'air' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Helicoptero.png', displayText: 'Helicopter (Helicóptero)', speakText: 'Helicopter', type: 'air' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/avioneta.png', displayText: 'Airplane (Avioneta)', speakText: 'Airplane', type: 'air' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/avion.png', displayText: '(Plane) Avión', speakText: 'Plane', type: 'air' }
+    ];
+
+    const IMAGES_LAND = [
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Autobus.png', displayText: 'Bus (Autobús)', speakText: 'Bus', type: 'land' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Coche.png', displayText: 'Car (Coche)', speakText: 'Car', type: 'land' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Motocicleta.png', displayText: 'Motorbike (Motocicleta)', speakText: 'Motorbike', type: 'land' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Tren.png', displayText: 'Train (Tren)', speakText: 'Train', type: 'land' }
+    ];
+
+    const IMAGES_SEA = [
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Velero.png', displayText: 'Sailing boat (Velero)', speakText: 'Sailing boat', type: 'sea' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/Yate.png', displayText: 'Yacht (Yate)', speakText: 'Yacht', type: 'sea' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/buque.png', displayText: 'Ship (Buque)', speakText: 'Ship', type: 'sea' },
+        { src: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Pueblo_Ciudad/Transportes/crucero.png', displayText: '(Cruise ship) Crucero', speakText: 'Cruise ship', type: 'sea' }
     ];
 
     // --- Variables de Estado ---
     let isMuted = false, startTime = 0, timerInterval = null, totalElapsed = 0;
     let totalAttempts = 0;
-    const intentosMinimos = 20;
-    let audioContext;
+    const intentosMinimos = 24;
+    let audioContext; 
+    let activeTaskAudio = null;
+    let activeAudioTimeout = null;
     let isProcessing = false;
-    let currentAudio = null;
-    
-    // Game 1 State
-    let activeGame1Data = [];
-    let currentQuestionIdx = 0;
-    let fakeSignalUsageCount = {};
 
-    // Grid Games State
-    let grid2CorrectCount = 0;
-    let activeGridData = [];
-    let grid2Order = [];
+    // Voz británica
+    let britishVoice = null;
 
-    // Precarga de audios
+    // Estado Juego 1
+    let game1Questions = [];
+    let game1Idx = 0;
+
+    // Estado Juegos 2, 3, 4
+    let game2Found = 0;
+    let game3Found = 0;
+    let game4Found = 0;
+
+    // Precarga de audios de efectos
     const audioObjects = {};
     Object.keys(audioFiles).forEach(key => {
-        audioObjects[key] = new Audio(audioFiles[key]);
-        audioObjects[key].load();
+        const a = new Audio(audioFiles[key]);
+        a.dataset.effect = 'true';
+        audioObjects[key] = a;
+        a.load();
     });
 
     // --- FIX CHROMEOS: Desbloqueo de Audio ---
@@ -369,6 +376,58 @@
         source.buffer = buffer;
         source.connect(audioContext.destination);
         source.start(0);
+    }
+
+    // --- Precarga silenciosa obligatoria en el primer clic ---
+    function silentPreload() {
+        // Precarga MP3
+        Object.keys(audioObjects).forEach(key => {
+            const a = audioObjects[key];
+            const originalVol = a.volume;
+            a.volume = 0;
+            a.play().then(() => {
+                a.pause();
+                a.currentTime = 0;
+                a.volume = originalVol;
+            }).catch(() => {
+                a.volume = originalVol;
+            });
+        });
+
+        // Despertar Speech Synthesis con mensaje vacío
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            const dummy = new SpeechSynthesisUtterance('');
+            dummy.volume = 0;
+            dummy.rate = 1;
+            dummy.lang = 'en-GB';
+            speechSynthesis.speak(dummy);
+        }
+    }
+
+    // --- Carga de voz británica ---
+    function loadVoices() {
+        const voices = speechSynthesis.getVoices();
+        if (voices.length === 0) return;
+        britishVoice = voices.find(v => v.lang.startsWith('en-GB')) || null;
+    }
+    if ('speechSynthesis' in window) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }
+
+    // --- Función de lectura con voz británica ---
+    function speakText(text) {
+        if (isMuted) return;
+        if (!('speechSynthesis' in window)) return;
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-GB';
+        if (britishVoice) {
+            utterance.voice = britishVoice;
+        }
+        utterance.rate = 0.95;
+        speechSynthesis.speak(utterance);
     }
 
     // --- Funciones de Sonido ---
@@ -412,18 +471,75 @@
         a.play().catch(e => console.log("Audio play error:", e));
     }
 
-    function reproducirAudioSenal(url) {
-        if(isMuted) return;
-        detenerAudioSenal();
-        currentAudio = new Audio(url);
-        currentAudio.play().catch(e => console.log("Audio señal error:", e));
+    // --- Función de control absoluto de audio de instrucciones ---
+    function forceStopTaskAudio() {
+        if (activeAudioTimeout) {
+            clearTimeout(activeAudioTimeout);
+            activeAudioTimeout = null;
+        }
+        if (activeTaskAudio) {
+            activeTaskAudio.oncanplaythrough = null;
+            activeTaskAudio.onerror = null;
+            activeTaskAudio.onended = null;
+            activeTaskAudio.pause();
+            activeTaskAudio.src = "";
+            activeTaskAudio = null;
+        }
     }
 
-    function detenerAudioSenal() {
-        if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            currentAudio = null;
+    function playTaskAudio(audioUrl) {
+        if(isMuted) return;
+        
+        if (activeAudioTimeout) {
+            clearTimeout(activeAudioTimeout);
+            activeAudioTimeout = null;
+        }
+        
+        if (activeTaskAudio) {
+            activeTaskAudio.oncanplaythrough = null;
+            activeTaskAudio.onerror = null;
+            activeTaskAudio.onended = null;
+            activeTaskAudio.pause();
+            activeTaskAudio.src = "";
+            activeTaskAudio = null;
+        }
+        
+        document.querySelectorAll('audio').forEach(a => {
+            if (!a.dataset.effect) {
+                a.pause();
+                a.src = "";
+            }
+        });
+
+        let newAudio = new Audio();
+        activeTaskAudio = newAudio;
+        
+        newAudio.src = audioUrl;
+        newAudio.preload = "auto";
+        
+        newAudio.onerror = function() {
+            activeTaskAudio = null;
+        };
+        
+        newAudio.onended = function() {
+            activeTaskAudio = null;
+        };
+        
+        newAudio.play().catch(e => {
+            console.log("Task audio play error:", e);
+            activeTaskAudio = null;
+        });
+    }
+
+    function stopAllAudios() {
+        forceStopTaskAudio();
+        document.querySelectorAll('audio').forEach(a => {
+            if (!a.dataset.effect) {
+                a.pause();
+            }
+        });
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
         }
     }
 
@@ -450,208 +566,250 @@
         document.getElementById(id).classList.add('active');
     }
 
-    function updateProgress(progressId, percent) {
-        document.getElementById(progressId).style.width = percent + '%';
+    function highlightButton(btnElement, color) {
+        const originalBg = btnElement.style.backgroundColor;
+        btnElement.style.backgroundColor = color;
+        setTimeout(() => {
+            btnElement.style.backgroundColor = originalBg;
+        }, 200);
     }
 
-    // --- Lógica del Juego ---
+    function preloadImages(urls) {
+        urls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+    }
 
+    // --- Lógica General del Juego ---
     function startGame() {
         unlockAudioContext();
+        silentPreload();
         reproducirSonidoTap();
         
         totalAttempts = 0;
         totalElapsed = 0;
-        isProcessing = false;
-        grid2CorrectCount = 0;
-        fakeSignalUsageCount = {};
-
-        preloadImagesAndAudios();
-
+        
+        const allSrcs = [...IMAGES_AIR, ...IMAGES_LAND, ...IMAGES_SEA].map(i => i.src);
+        preloadImages(allSrcs);
+        
         startTime = Date.now();
         timerInterval = setInterval(() => {
             totalElapsed = Date.now() - startTime;
             const timeStr = formatTime(totalElapsed);
-            const td1 = document.getElementById('timerDisplay1');
-            const td2 = document.getElementById('timerDisplay2');
-            if(td1) td1.textContent = timeStr;
-            if(td2) td2.textContent = timeStr;
+            document.getElementById('timer1Display').textContent = timeStr;
+            document.getElementById('timer2Display').textContent = timeStr;
+            document.getElementById('timer3Display').textContent = timeStr;
+            document.getElementById('timer4Display').textContent = timeStr;
         }, 100);
 
-        startGame1();
+        initGame1();
     }
 
-    function preloadImagesAndAudios() {
-        SIGNALS_DATA.forEach(item => {
-            const img = new Image();
-            img.src = item.image;
-            const aud = new Audio(item.audio);
-            aud.load();
+    // --- Configuración de botones del Juego 1 ---
+    const buttonConfigs = [
+        { type: 'air', label: 'Air', emoji: '☁️', cssClass: 'btn-air', color: '#0099FF' },
+        { type: 'land', label: 'Land', emoji: '⛰️', cssClass: 'btn-land', color: '#FA9E28' },
+        { type: 'sea', label: 'Sea', emoji: '🌊', cssClass: 'btn-sea', color: '#7DDE7D' }
+    ];
+
+    // --- Lógica del Juego 1 (Types of transport) ---
+    function initGame1() {
+        game1Questions = [...IMAGES_AIR, ...IMAGES_LAND, ...IMAGES_SEA];
+        game1Questions = shuffle(game1Questions);
+        game1Idx = 0;
+        isProcessing = false;
+
+        // Generar botones en orden aleatorio
+        const controlsContainer = document.getElementById('game1Controls');
+        controlsContainer.innerHTML = '';
+        const shuffledButtons = shuffle([...buttonConfigs]);
+        shuffledButtons.forEach(cfg => {
+            const btn = document.createElement('button');
+            btn.className = `btn btn-j1 ${cfg.cssClass} notranslate`;
+            btn.id = `btn${cfg.type.charAt(0).toUpperCase() + cfg.type.slice(1)}`;
+            btn.innerHTML = `${cfg.label}<br><span class="btn-emoji">${cfg.emoji}</span>`;
+            btn.addEventListener('click', () => checkGame1Answer(cfg.type, btn));
+            controlsContainer.appendChild(btn);
         });
-    }
 
-    // ================= GAME 1 =================
-    function startGame1() {
-        currentQuestionIdx = 0;
-        activeGame1Data = shuffle([...SIGNALS_DATA]);
-        fakeSignalUsageCount = {};
-        updateProgress('progGame1', '0%');
-        showScreen('gameScreen1');
+        document.getElementById('progGame1').style.width = '0%';
+        showScreen('game1Screen');
         loadGame1Question();
     }
 
-    function getWeightedRandomFake(correctIndex) {
-        let others = SIGNALS_DATA.map((item, idx) => idx).filter(idx => idx !== correctIndex);
-        
-        let minUsage = Infinity;
-        for(let idx of others) {
-            let usage = fakeSignalUsageCount[idx] || 0;
-            if(usage < minUsage) {
-                minUsage = usage;
-            }
-        }
-        
-        let candidates = others.filter(idx => (fakeSignalUsageCount[idx] || 0) === minUsage);
-        return candidates[Math.floor(Math.random() * candidates.length)];
-    }
-
     function loadGame1Question() {
-        if (currentQuestionIdx >= activeGame1Data.length) {
-            startGame2();
+        if (game1Idx >= game1Questions.length) {
+            // Barajar el orden de los juegos 2, 3, 4
+            const gameOrder = shuffle([2, 3, 4]);
+            window._gameOrder = gameOrder;
+            window._nextGameIdx = 0;
+            loadNextGridGame();
             return;
         }
         isProcessing = false;
-        const q = activeGame1Data[currentQuestionIdx];
-        const correctIndex = SIGNALS_DATA.indexOf(q);
-        
-        document.getElementById('textDisplay1').textContent = q.text;
-        document.getElementById('levelIndicator1').textContent = `Nivel ${currentQuestionIdx + 1}/10`;
-        updateProgress('progGame1', ((currentQuestionIdx) / activeGame1Data.length) * 100 + '%');
-        
-        reproducirAudioSenal(q.audio);
-
-        const fakeIndex = getWeightedRandomFake(correctIndex);
-        fakeSignalUsageCount[fakeIndex] = (fakeSignalUsageCount[fakeIndex] || 0) + 1;
-
-        const options = [
-            { data: q, isCorrect: true },
-            { data: SIGNALS_DATA[fakeIndex], isCorrect: false }
-        ];
-
-        const shuffledOptions = shuffle([...options]);
-
-        const grid = document.getElementById('optionsGrid1');
-        grid.innerHTML = '';
-
-        shuffledOptions.forEach(opt => {
-            const cell = document.createElement('div');
-            cell.className = 'j1-option-cell';
-            
-            const img = document.createElement('img');
-            img.src = opt.data.image;
-            img.alt = opt.data.text;
-            cell.appendChild(img);
-
-            cell.onclick = () => checkGame1Answer(cell, opt.isCorrect);
-            grid.appendChild(cell);
-        });
+        const q = game1Questions[game1Idx];
+        document.getElementById('game1Img').src = q.src;
+        document.getElementById('game1Label').innerHTML = q.displayText;
+        document.getElementById('level1Indicator').textContent = `Level ${game1Idx + 1}/12`;
+        updateGame1Progress();
+        speakText(q.speakText);
     }
 
-    function checkGame1Answer(cellElement, isCorrect) {
+    function updateGame1Progress() {
+        const percent = (game1Idx / game1Questions.length) * 100;
+        document.getElementById('progGame1').style.width = percent + '%';
+    }
+
+    function checkGame1Answer(selectedType, btnElement) {
         if (isProcessing) return;
-        
+        const q = game1Questions[game1Idx];
+        const isCorrect = (selectedType === q.type);
         totalAttempts++;
 
         if (isCorrect) {
             isProcessing = true;
             reproducirSonidoCorrecto();
-            cellElement.classList.add('cell-correct');
-            currentQuestionIdx++;
-            setTimeout(() => loadGame1Question(), 500);
+            highlightButton(btnElement, '#27ae60');
+            game1Idx++;
+            updateGame1Progress();
+            setTimeout(() => loadGame1Question(), 200);
         } else {
             reproducirSonidoError();
-            cellElement.classList.add('cell-wrong');
-            cellElement.classList.add('shake');
-            setTimeout(() => {
-                cellElement.classList.remove('cell-wrong');
-                cellElement.classList.remove('shake');
-            }, 400);
+            applyShake('game1Board');
+            highlightButton(btnElement, '#c0392b');
         }
     }
 
-    // ================= GAME 2 =================
-    function startGame2() {
-        grid2CorrectCount = 0;
-        activeGridData = shuffle([...SIGNALS_DATA]);
-        grid2Order = [...Array(activeGridData.length).keys()];
-        grid2Order = shuffle(grid2Order);
-        updateProgress('progGame2', '0%');
-        showScreen('gameScreen2');
-        loadGame2Question();
-    }
-
-    function loadGame2Question() {
-        if (grid2CorrectCount >= activeGridData.length) {
+    // --- Enrutador para juegos de grid (2, 3, 4) ---
+    function loadNextGridGame() {
+        if (window._nextGameIdx >= window._gameOrder.length) {
             endGame();
             return;
         }
-        isProcessing = false;
-        const currentOrderIndex = grid2Order[grid2CorrectCount];
-        const q = activeGridData[currentOrderIndex];
-        document.getElementById('textDisplay2').textContent = q.text;
-        document.getElementById('levelIndicator2').textContent = `Nivel ${grid2CorrectCount + 1}/10`;
-        updateProgress('progGame2', ((grid2CorrectCount) / activeGridData.length) * 100 + '%');
-        
-        reproducirAudioSenal(q.audio);
-
-        const container = document.getElementById('gridContainer2');
-        container.innerHTML = '';
-
-        activeGridData.forEach((item, index) => {
-            const cell = document.createElement('div');
-            cell.className = 'grid-cell';
-            cell.dataset.index = index;
-
-            const img = document.createElement('img');
-            img.src = item.image;
-            img.alt = item.text;
-            cell.appendChild(img);
-
-            cell.onclick = () => handleGrid2Click(cell, item, currentOrderIndex);
-            container.appendChild(cell);
-        });
+        const next = window._gameOrder[window._nextGameIdx];
+        if (next === 2) initGame2();
+        else if (next === 3) initGame3();
+        else if (next === 4) initGame4();
     }
 
-    function handleGrid2Click(cell, item, currentOrderIndex) {
-        if (isProcessing) return;
+    // --- Función genérica para inicializar juegos de grid ---
+    function initGridGame(screenId, boardId, gridId, progressId, levelId, taskText, targetType, targetImages, otherImages1, otherImages2, foundRef, replayBtnId) {
+        forceStopTaskAudio();
+
+        // Reiniciar encontrado
+        if (targetType === 'air') game2Found = 0;
+        else if (targetType === 'land') game3Found = 0;
+        else if (targetType === 'sea') game4Found = 0;
+
+        document.getElementById(progressId).style.width = '0%';
+        document.getElementById(levelId).textContent = 'Level 1/4';
+        showScreen(screenId);
+
+        // Seleccionar 3 aleatorias de otherImages1 y 3 de otherImages2
+        const shuffled1 = shuffle([...otherImages1]);
+        const shuffled2 = shuffle([...otherImages2]);
+        const distractors = [...shuffled1.slice(0, 3), ...shuffled2.slice(0, 3)];
+
+        // Combinar targets + distractors y barajar
+        const allImages = shuffle([...targetImages, ...distractors]);
+
+        const grid = document.getElementById(gridId);
+        grid.innerHTML = '';
+
+        allImages.forEach(imgData => {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.src = imgData.src;
+            cell.dataset.type = imgData.type;
+
+            const img = document.createElement('img');
+            img.src = imgData.src;
+            img.alt = imgData.displayText;
+            img.draggable = false;
+
+            cell.appendChild(img);
+
+            cell.addEventListener('click', function() {
+                handleGridClick(cell, targetType, boardId, progressId, levelId, targetImages.length, replayBtnId);
+            });
+
+            grid.appendChild(cell);
+        });
+
+        // Leer la instrucción con Speech Synthesis
+        speakText(taskText);
+    }
+
+    function handleGridClick(cell, targetType, boardId, progressId, levelId, totalTargets, replayBtnId) {
         if (cell.classList.contains('cell-correct')) return;
 
-        const expectedItem = activeGridData[currentOrderIndex];
-        const isCorrect = item.image === expectedItem.image;
+        const clickedType = cell.dataset.type;
+        const isCorrect = (clickedType === targetType);
 
         totalAttempts++;
 
         if (isCorrect) {
-            isProcessing = true;
             reproducirSonidoCorrecto();
             cell.classList.add('cell-correct');
-            grid2CorrectCount++;
-            setTimeout(() => loadGame2Question(), 500);
+
+            // Actualizar found
+            let found;
+            if (targetType === 'air') { game2Found++; found = game2Found; }
+            else if (targetType === 'land') { game3Found++; found = game3Found; }
+            else if (targetType === 'sea') { game4Found++; found = game4Found; }
+
+            const percent = (found / totalTargets) * 100;
+            document.getElementById(progressId).style.width = percent + '%';
+
+            if (found === totalTargets) {
+                setTimeout(() => {
+                    reproducirSonidoCompletado();
+                    window._nextGameIdx++;
+                    loadNextGridGame();
+                }, 400);
+            }
         } else {
             reproducirSonidoError();
+            applyShake(boardId);
             cell.classList.add('cell-wrong');
-            cell.classList.add('shake');
             setTimeout(() => {
                 cell.classList.remove('cell-wrong');
-                cell.classList.remove('shake');
             }, 400);
         }
     }
 
-    // ================= FINAL =================
+    // --- Juego 2: Select the AIR transports ---
+    function initGame2() {
+        initGridGame(
+            'game2Screen', 'game2Board', 'imageGrid2', 'progGame2', 'level2Indicator',
+            'Select the pictures of air transports.',
+            'air', IMAGES_AIR, IMAGES_LAND, IMAGES_SEA, game2Found, 'btnReplayTask2'
+        );
+    }
+
+    // --- Juego 3: Select the LAND transports ---
+    function initGame3() {
+        initGridGame(
+            'game3Screen', 'game3Board', 'imageGrid3', 'progGame3', 'level3Indicator',
+            'Select the pictures of land transports.',
+            'land', IMAGES_LAND, IMAGES_AIR, IMAGES_SEA, game3Found, 'btnReplayTask3'
+        );
+    }
+
+    // --- Juego 4: Select the SEA transports ---
+    function initGame4() {
+        initGridGame(
+            'game4Screen', 'game4Board', 'imageGrid4', 'progGame4', 'level4Indicator',
+            'Select the pictures of sea transports.',
+            'sea', IMAGES_SEA, IMAGES_AIR, IMAGES_LAND, game4Found, 'btnReplayTask4'
+        );
+    }
+
+    // --- Pantalla Final ---
     function endGame() {
         clearInterval(timerInterval);
-        detenerAudioSenal();
+        stopAllAudios();
         showScreen('finalScreen');
         
         const finalScore = Math.max(0, Math.round(100 - ((totalAttempts - intentosMinimos) * (100 / intentosMinimos))));
@@ -661,12 +819,12 @@
 
         if(finalScore === 100) {
             document.getElementById('trophyBox').style.display = 'block';
-            document.getElementById('finalMsg').textContent = '¡Genial, puntuación perfecta!';
+            document.getElementById('finalMsg').textContent = 'Well done, full marks!';
             reproducirSonidoVictoria();
             createConfetti();
         } else {
             document.getElementById('trophyBox').style.display = 'none';
-            document.getElementById('finalMsg').textContent = '¡Buen trabajo, sigue practicando!';
+            document.getElementById('finalMsg').textContent = 'Good job! Keep practising!';
             reproducirSonidoCompletado();
         }
     }
@@ -678,7 +836,7 @@
                 c.className = 'confetti';
                 c.style.left = Math.random() * 100 + 'vw';
                 c.style.top = '-10px';
-                c.style.backgroundColor = ['#f59e42', '#2ecc71', '#254fba'][Math.floor(Math.random()*3)];
+                c.style.backgroundColor = ['#f59e42', '#2ecc71', '#254fba', '#0099FF', '#7DDE7D'][Math.floor(Math.random()*5)];
                 c.style.setProperty('--tx', (Math.random()-0.5) * 400 + 'px');
                 c.style.setProperty('--ty', window.innerHeight + 'px');
                 document.body.appendChild(c);
@@ -690,29 +848,33 @@
     // --- Eventos ---
     document.getElementById('startBtn').onclick = startGame;
     
-    document.getElementById('playAudioBtn1').onclick = () => {
-        if (!isProcessing && activeGame1Data.length > 0) {
-            reproducirAudioSenal(activeGame1Data[currentQuestionIdx].audio);
-        }
-    };
-
-    document.getElementById('playAudioBtn2').onclick = () => {
-        if (!isProcessing && activeGridData.length > 0) {
-            const currentOrderIndex = grid2Order[grid2CorrectCount];
-            reproducirAudioSenal(activeGridData[currentOrderIndex].audio);
-        }
-    };
-    
     document.getElementById('restartBtn').onclick = () => {
         reproducirSonidoTap();
         location.reload(); 
+    };
+
+    // Botones de replay para juegos de grid (usan Speech Synthesis)
+    document.getElementById('btnReplayTask2').onclick = () => {
+        unlockAudioContext();
+        reproducirSonidoTap();
+        speakText('Select the pictures of air transports.');
+    };
+    document.getElementById('btnReplayTask3').onclick = () => {
+        unlockAudioContext();
+        reproducirSonidoTap();
+        speakText('Select the pictures of land transports.');
+    };
+    document.getElementById('btnReplayTask4').onclick = () => {
+        unlockAudioContext();
+        reproducirSonidoTap();
+        speakText('Select the pictures of sea transports.');
     };
     
     document.getElementById('muteBtn').onclick = () => { 
         if (!isMuted) {
             isMuted = true;
-            detenerAudioSenal();
             document.getElementById('muteBtn').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>';
+            stopAllAudios();
         } else {
             isMuted = false;
             document.getElementById('muteBtn').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>';
